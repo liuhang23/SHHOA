@@ -107,28 +107,37 @@
 		
      3.填空(Action方法、Service方法、jsp页面)
  	   3.1，Action方法。
+ 	   		3.1.1Action方法添加功能步骤：
+ 	   		     //1.新建对象并设置属性（model使用的是实体的情况下，也可以使用model，但需要设置未封装的属性）
+ 	   		     //2.保存到属性库
+ 	   		3.1.2修改功能的步骤
+ 	   		     //1.从数据库中取出原对象
+ 	   		     //2.设置要修改的属性
+ 	   		     //3.更新到数据库     
        3.2，新增的Service方法。
 	   3.3，JSP页面的内容：
 			a，拷贝静态页面中的源代码到JSP中。
 	        b，包含进来公共的资源：<%@ include file=“../public/commons.jspf" %>
 		    c，把 ../ 替换为 ${pageContext.request.contextPath}/
 	        d，修改页面内容（使用自定义标签）
- 	   
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 	   		   1.列表页面 ： <s:iterator value="">   <s:a action="">
+   			   2.表单页面(saveUI.jsp)
+    			 <s:form action="departmentAction_%{id == null ? 'add' : 'edit'}">
+    			 	<s:iterator value="#departmentList"></s:iterator>
+    			 	<s:hidden name="id"/>
+        （单行文本框）<s:textfield>
+        （多行文本框）<s:textarea>
+    	     （单选）<s:select name=".." list=".." listkey=".." listValue=".." headerKey="" headerValue="===请选择部门===">
+    		 （多选）<s:select multiple="true" size="10" name=".." list="..(#departmentList)" listkey="..(id)" listValue="..(name)" >	    
+    		 
+    		 （单选）<s:radio name="" list="%{#{'男':'男' ,'女':'女'}}">
+    		 	    <s:radio name="gender" list="#{'男':'男' ,'女':'女'}">
+    		 	    <s:radio name="gender" list="{'男','女'}">
+    			    
+    			    <s:checkbox>
+    			    <s:submit> 
+    			    <s:a action></s:a>
+    			    ...
+    			</s:form>
 
 
