@@ -44,7 +44,15 @@ public class UserAction extends BaseAction<User> {
 
 	// 添加
 	public String add() throws Exception {
-
+		//封装到对象中(当model时实体类型时，也可以使用model,但要设置未封装的属性)
+		//>>设置所属部门
+		
+		//>>设置关联的岗位
+		
+		//>>设置默认密码1234
+		
+		//保存到数据库中
+		userService.save(model);
 		return "toList";
 	}
 

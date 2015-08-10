@@ -8,12 +8,13 @@ public class User {
 	private Long id;
 	private Department department; // 所属部门
 	private Set<Role> roles = new HashSet<Role>(); // 无序，对应岗位
-	
+
 	private String loginName; // 登陆名
-	private String passwrod;// 密码
-	private String email; // 邮箱
-	private String phoneNumber; // 电话号码
 	private String name;// 真实姓名
+	private String passwrod;// 密码
+	private String gender;// 性别
+	private String phoneNumber; // 电话号码
+	private String email; // 邮箱
 	private String description; // 说明
 
 	public User() {
@@ -90,6 +91,14 @@ public class User {
 
 	public void setPhoneNumber(String phoneNumber) {
 		this.phoneNumber = phoneNumber;
+	}
+
+	public String getGender() {
+		return gender;
+	}
+
+	public void setGender(String gender) {
+		this.gender = gender;
 	}
 
 }
