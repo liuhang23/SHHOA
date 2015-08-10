@@ -1,0 +1,48 @@
+
+分析功能
+	5个功能。
+	7个请求。
+
+实现功能
+	Action, 7个方法
+	Service
+	Dao
+	Jsp
+
+
+
+ForumAction
+	list()	版块列表		1个
+	show()	显示单个版块（主题列表）	1个
+
+TopicAction
+	show()	显示单个主题（主帖+回帖列表）	1个
+	addUI(), add()	发新帖			2个
+
+ReplyAction
+	addUI(), add()	回帖			2个
+
+
+
+
+public void foo() throws IOException{
+	...
+}
+
+public void a(){
+	try{
+		foo();
+	}catch(IOException e){
+		throw new RuntimeException(e);
+	}
+}
+
+main(){
+	a();
+}
+
+
+select id, name, (CASE gender WHEN 1 THEN '男' ELSE '女' END) from user;
+
+
+

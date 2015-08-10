@@ -1,0 +1,311 @@
+一.SHH整合（12天完成）8月5号 ----8月17号（迷恋+热情）
+   1.搭建环境（引入jar包）
+   2.配置文件(applicationContext.xml,hibernate.cfg.xml,struts.xml)
+   3.分包（src , config , test）
+   	 spring与struts整合  
+   	 	1，在web.xml中配置Spring的监听器
+   	 spring与Hibernate整合
+   	 	1，管理SessionFactory实例（只需要一个）: 让Spring容器进行管理
+		现在applicationContext.xml中配置hibernate的sessionFactory的bean的配置
+		2，声明式事务管理 
+	 Spring（功能）	
+   	 	IOC 管理对象..（将struts2中action由Spring管理）
+	    AOP 事务管理..
+   	 	
+   	 	注解声明bean : @Componet   @Controller  @Service  @Repository
+   	 	配置bean的Scope("prototype")
+   	 	注入bean @Resource
+  
+   4.测试
+      log4j.rootLogger=error, stdout
+      debug	（调试信息）、 info（一般信息）、warn（	警告）、error（错误）、fatal（严重错误）
+   	 
+   5.分层(3层 或 4层)  解决问题：耦合（低耦合） -- 解耦（高内聚）
+	    View（serlvet/action（Struts2）/SpringMVC）		     
+		 ↓
+		Service		接口/实现类  
+		 ↓
+		Dao			接口/实现类
+			
+   
+二.Dao层设计  （数据服务层，@Repository）
+   1.编写基本DAO接口(面向接口编程)  抽取接口的公共方法，抽取公共类的实现方法，
+    1.1  interface   BaseDao<T>{
+    	 	save(T entity), update(T entity), delete(T t), getById(T t)	,find(Long[] ids) ,findAll(),
+    	 }   
+    	 interface   UserDAo  extends BaseDao<User>{//可添加本接口自己的方法 }	  
+         interface   RoleDao  extends BaseDao<Role>{ } 
+         ...
+         
+    1.2  实现类  (解决同样的方法多次声明解决)
+         BaseDaoImpl<T> implements BaseDao<T>{ 
+            @Resource
+            private SessionFactory sessionFacoty;
+            
+            public BaseDaoImpl() {
+				// 使用反射技术得到T的真实类型  com.smartlab.oa.base.BaseDaoImpl<com.smartlab.oa.domain.User>
+				ParameterizedType pt = (ParameterizedType) this.getClass()// this表示当前new的实例
+				.getGenericSuperclass(); // 获取当前new的对象的泛型的父类 类型
+				// 获取第一个参数类型的真实参数
+				this.clazz = (Class<T>) pt.getActualTypeArguments()[0];
+				System.out.println("clazz-->" +clazz);  //com.smartlab.oa.domain.User
+			}
+            
+            //获取当前可用的session,（设置为protected给子类提供session）
+            protected Session getSession(){  //让子类中不需要注入
+            	return sessionFactory.getCurrentSession();
+            }
+            
+            //实现公共方法
+         	save(T entity){   //Spring做了事务处理(开和关)
+         	   getSession.sava(entity);
+         	}, 
+         	update(T entity){ getSession.update(entity)},
+         	delete(T t){ },
+         	getById(T t)	,
+         	find(Long[] ids) ,
+         	findAll(){
+         			class.getSimpleName（反射得到类名）
+         	},
+         }
+         
+         UserDaoImpl extends BaseDaoImpl<User> implements UserDao{ }
+         ...
+         
+    1.3   
+    
+    
+三.功能实现(	1，写Action类，写Action中的方法，确定Service中的方法。2，写Service方法，确定Dao中的方法。
+	3，写Dao方法。4，写JSP)
+	1、设计实体 --> JavaBean --> xxx.hbm.xml(同时添加到hibernate.cfg.xml) --> 建表(执行SpringTest来映射实体到数据库中生成对象的表)
+	     1.1️有几个实体(一般是一组增删查改)
+	2.分析有几个功能，对应几个请求。
+	   系统管理 ---> 1.岗位管理  （系统管理员，部门经理，财务经理，总经理，副总经理，出纳，测试员）
+	   			    2.部门管理  （市场部（客服部，销售部），研发部（产品部，测试部））存在上级部门与下级部门关系
+	   			    3.用户管理  （一个用户可以有多个岗位（））
+	  
+	3.实现功能
+	    1，写Action类，写Action中的方法，确定Service中的方法。
+		     				    <-->删除   转发与重定向区别） 请求数量    地址栏(URL)
+		 1.1 岗位管理 --- 列表    <-->添加     转发：      	  1 		不变
+		     					 <-->修改    重定向：	          2		    变化
+			
+		     列表与删除功能都只有一个请求 、 添加与修改功能都是有两个请求（重定向到列表）
+			 增删改查共4个功能，每个Action方法处理一种请求，所以需要有相应的6个Action方法，每个Action方法处理一种请求
+		 1.2  作用		方法名		返回值		对应的页面
+		     ----------------------------------------------------（Action功能函数编写）
+ 			  列表		list()		list		list.jsp	
+		      删除		delete()	toList
+			  添加页面	addUI()	    addUI		addUI.jsp
+			  添加		add()		toList
+			  修改页面	editUI()	editUI		editUI.jsp
+			  修改		edit()		toList
+		 	
+		 1.3  struts.xml配置	   
+				   <action method=“{1}” class=“roleAction”  name=“role_*”>
+						<result name=“list”>/WEB-INF/jsp/roleAction/list.jsp</result>
+						<result name=“saveUI”>/WEB-INF/jsp/roleAction/addUI.jsp</result>
+						<result name=“editUI”>/WEB-INF/jsp/roleAction/editUI.jsp</result>
+				    	<result name="toList" type="redirectAction">role_list</result>
+				    </action> 
+				
+	     （统配符）role_*	  --->  {1}
+				role_list		list
+				role_addUI		addUI
+				role_delete		delete
+				
+		  1.4 CRUD的Action方法的模板
+		        使用的注解 : @Controller  @Scope("prototype") 
+		                    @Resource  注入依赖的service
+		        public class RoleAction extends ActionSupport implements ModelDriver<Role>{            
+		  	    
+		  	    private Role model = new Role();
+		  	    //使用model可以减少再次封装参数
+		  	    public Role getModel(){
+		  	    	return model;
+		  	    }
+		  	    
+		  	    /** 列表 */
+				public String list() throws Exception {
+					List<Role> roleList = roleService.findAll();
+					ActionContext.getContext.put("roleList",roleList);
+					return "list";
+				}
+				/** 删除 */
+				public String delete() throws Exception {
+					return "toList";
+				}
+				/** 添加页面 */
+				public String addUI() throws Exception {
+					return "addUI";
+				}
+				/** 添加 */
+				public String add() throws Exception {
+					return "toList";
+				}
+				/** 修改页面 */
+				public String editUI() throws Exception {
+					//准备回显数据
+					Role role = roleService.getById(id);
+					ActionContext.getContext.getValueStack().push(role);
+					return "editUI";
+				}
+				/** 修改 */
+				public String edit() throws Exception {
+					//1.从数据库中获取原对象
+					Role role = roleService.getById(id);
+					//2.设置要修改的属性
+					role.setName(name);
+					role.setDescription(description);
+					//3.跟新到数据库
+					roleService.update(role);
+					return "toList";
+				}	
+		 	}  	 
+	2，写Service方法，确定Dao中的方法。
+		    在serviceImpl使用的注解 :  @Service  @Transactional(管理事务)
+		    RoleService(Interface)
+		 	RoleServiceImpl implements RoleService{  
+		 	    //注入dao 
+		 	    @Resouse
+		 	    private RoleDao roleDao;
+		 	  	//执行CURD
+		 	}
+		
+	3，写Dao方法。  使用@Responsity 让spring容器进行管理
+	4，写JSP   
+	   1.查询页面(list.jsp)  使用struts2的标签（引入标签库 <% taglib prefix="s" uri="/struts-tags" %>）
+	   	 <s:iterator value="#roleList">  //循环迭代存放在ognl中的值(#)
+ 	   	     <s:property  value="id"/>
+ 	   	     <s:property  value="name"/>
+ 	   	     <s:a action="role_delete ? id = %{id}">删除</s:a> //通过%传入对应的id值，通过id删除
+	   	 	 <s:a action="role_editUI?id=%{id}">修改</s:a>
+	   	 </s:iterator>
+	   2.添加页面(addUI.jsp)  
+	   	  <s:from action="role_add">
+	   	  		<s:textfield name="name"></s:textfield>
+	   	  		<s:textarea  name="description"></s:textarea>
+	   	  		<s:submit value="提交"></s:submit>
+	   	  </s:form>
+	   3.编辑页面(editUI.jsp)
+	     <s:from action="role_edit">
+	     		<s:textfield name="name"></s:textfield>
+	     		<s:textarea  name="description"></s:textarea>
+	    		<s:submit value="提交"></s:submit>
+	     </s:from>	  
+	     
+	   4.使用美工写好的页面效果（整合时 修改页面和编辑页面大体相同）
+    	  唯一区别 ： edit页面会多一个隐藏域<s:hidden name="id"></s:hidden>,添加页面需要回显数据
+     	  在请求中做判断<s:form action="role_%{ id == null ? 'add': 'edit'}">	
+          <s:hidden name="id"></s:hidden>   //样式需要使用cssClass
+          <s:textfield type="text" name="name" cssClass="InputStyle" > </s:textfield>
+         
+四.设计实体（在项目中磨练与成长，数不胜数的加班（毕业前三年，坚持不懈，你努力了就成功了））
+   1.有几个实体（一般是一组增删查改）
+   2.实体间有何关系（一般是页面引用了其他的实体时，就表示与这个实体有关联关系）
+   	    自关联（parent children）  一对多   多对多  
+   	    上级对下级  （一对多） 部门与部门间的关联
+   3.每个实体中都有什么属性   
+	  3.1 主键 
+	  3.2 关联关系 ：关联关系是一条线，有两端，每一段对应一个表达此关联关系的属性，有几个端指向本类，本类就有几个关联属性
+	  3.3 一般属性 ：分析所有有关的页面，找出表单中要填写的或是在显示页面中要显示的信息等
+	  3.4 特殊属性 ： 工龄（=当前时间-入职时间，存入职时间 ） ，年龄（存生日 = 当前时间 - 出生日期 ）    
+   4.xxx.hbm.xml配置方式 (hibernate实体映射)     
+     4.1  <!-- users属性，本类与User的一对多 -->  列出关联关系，写上注解
+	  	格式：?（属性名）属性，本类与 ?（关联实体名） 的?（关系）
+   		 	
+     4.2 配置格式(3种方式)
+	   多对一：
+			<many-to-one name="" class="" column=""></many-to-one>
+		一对多（Set）：
+			<set name="">
+				<key column=""></key>
+				<one-to-many class=""/>
+			</set>
+		多对多（Set）：
+			<set name="" table="">
+				<key column=""></key>
+				<many-to-many class="" column=""></many-to-many>
+			</set>     
+      4.3 填空
+      	    *name属性  ： 属性名（注释中的第1问号）
+		    *Class属性 ： 关联的实体类型（注释的第2个问号）
+		    *column属性： 
+		•<many-to-one column="..">：一般可以写成属性名加Id后缀，如属性为department，则column值写成departmentId。
+		•一对多中的<key column="..">：从关联的对方（对方是多对一）映射中把column值拷贝过来。
+		•多对多中的<key column=“..”>：一般可以写成本对象的名加Id后缀，如本对象名为User，则写为userId。
+		•多对多中的<many-to-many column=“..”>：一般可以写为关联对象的名称加Id后缀。例如本对象为user,可以为关联表的column(roleId)<key column="roleId">   
+        •多对多的表名,可以写成两个类的名字和 ,例如SHHOA_user_role
+  
+五.实体设计/映射 (CURD)         
+   1.部门管理
+     1.1基本的增删改查
+     1.2增删改查中对与"上级部门"的处理
+     	<s:select name="parentId" cssClass="SelectStyle"
+           list="#departmentList" listKey="id"   listValue="name"
+           headerKey=""  headerValue="===请选择部门==="  />  
+        // list用于显示数据  listKey表示提交给服务器的值   listValue用于在页面显示的值
+            headerKey=""  headerValue="===请选择部门==="    （显示头名）
+        name的值parentId	提交给服务器后，先在（对象栈的）model中找，没有找到就在action中找，如果都没有，则可以在
+        不影响model的结构，在action中封装parentId。 
+        在添加方法中(save):由于model中没有parentId字段，而添加需要保存model，可以通过parentId找到对应父类对象。存放到model对应的parent字段，
+        最后将model进行保存。初始添加，parentId为空，则需要进行空判断(在最底层封装空判断(BaseDaoImpl))。
+		public T getById(Long id) {
+			if(id == null){
+				return null;
+			}else{
+				return (T) getSession().get(clazz, id);
+			  }
+		}
+		删除注意点 : 存在上级下级主外键关联，需要设置级联（级联操作子部门 cascade="delete"）
+		<set name="children" cascade="delete">
+			<key column="parentId"></key>
+			<one-to-many class="Department" />
+		</set>
+     1.3处理部门的树状结构显示
+          List<Department> departmentList = null;
+          if(partendId ==  null){ //查询顶级部门列表（初始化显示顶级部门列表）
+	          departmentList = departmentService.findTopList();
+          }else{
+         	  departmentList  = departmentService.findChildren(parentId);   //查询子部门列表
+         }
+         ActionContext.getContext().put("departmentList",departmentList);
+     
+      页面传参 <s:a action="department_list?parentId=%{id}">${name}</s:a>  
+      管理模块处理3个细节问题
+      问题1 :返回上一级(显示父类的父类id)  <s:a action="department_list?parentId=${#parent.parent.id}">返回到上一级</s:a>
+      	返回页面通过id控制，当前上一级为pid=2,如果返回到上一级则需要父类的id.	
+      		aaa1 ( pid=1)
+	 			 bbb1  (pid=2)
+					 ccc1
+					 ccc2
+				 bbb2
+					 ddd1
+					 ddd2
+		   aaa2
+      	
+      问题2 :在子部门页面中添加部门，在路径中加parentId
+      问题3:新建应该还在此父类页面（产生原因，在struts.xml中redirectAction没有带跳转参数）
+      	原  <result name="toList" type="redirectAction">department_list</result>
+      	改	<result name="toList" type="redirectAction">department_list?parentId=${parentId}</result>
+      	删除页面也需要添加删除参数  action="department_delete?id=%{id}&parentId=%{parent.id}" 
+     
+   1.4使用懒加载，并不抛异常（Web程序中懒加载异常说明及解决方案）
+   	  产生原因：session在事务打开开始，事务提交后关闭，在页面第一次加载了懒加载属性，但事务提交完成，session已经关闭，则产生了懒加载异常。
+      解决方案:Fileter或Interceptor先进后出，在页面请求完成后关闭session,Spring中有openSessionInviewFilter可以解决
+      在web.xml中配置配置openSessionInviewFilter,配置放在struts2配置文件上
+      		<!-- 配置Spring的用于解决懒加载问题的过滤器 -->
+			<filter>
+				<filter-name>OpenSessionInViewFilter</filter-name>
+				<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
+			</filter>
+			<filter-mapping>
+				<filter-name>OpenSessionInViewFilter</filter-name>
+				<!--struts2中采用配置后缀为.action -->
+				<url-pattern>*.action</url-pattern> 
+			</filter-mapping>
+      		
+        Action --> Service --> Dao  
+         UI    --------->      DB
+         
+         

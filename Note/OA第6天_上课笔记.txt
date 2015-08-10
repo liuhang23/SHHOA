@@ -1,0 +1,92 @@
+系统管理------>权限 
+
+3天  论坛
+
+1，分页
+	自定义过滤 + 自定义排序
+	通用
+2，主题列表的顺序
+3，主题的类型
+4，回复列表中的楼层
+
+
+D
+A a1 
+B b1顶
+C
+
+LZ
+楼主
+沙发 1
+板凳 2 
+地板 3
+
+===========================【上下移动】
+
+1，查询时要按position的值排序。
+2，添加时要指定position的值，要唯一。
+3，上下移动就是与上面或下面的那个Forum交换position的值。
+
+
+SELECT * FROM itcast_forum order by position;
+
+select * from itcast_forum where position=(
+  select max(position) from itcast_forum where position<7
+);
+
+select * from itcast_forum where position<7 order by position desc limit 0,1;
+
+
+======================================
+
+Topic		Reply
+------		------
+id			id
+title		title
+content		content
+postTime	postTime
+author		author
+ipAddr		ipAddr
+...			...
+type		..
+...
+
+======================================
+
+forum.getTopics().size()
+
+	topic.getReplies().size();
+
+=================
+主题列表的顺序
+回复楼层
+
+
+FROM 
+	Topic t 
+ORDER BY 
+	if(t.lastReply == null){
+		t.postTime
+	}else{
+		t.lastReply.postTime
+	}
+DESC
+
+
+
+
+FROM 
+	Topic t 
+ORDER BY 
+	t.lastUpdateTime DESC
+
+
+=============================
+映射时注意：
+
+1，content应是text类型。
+2，有一对一的关联关系。
+3，单向关联。
+4，继承。
+
+============================

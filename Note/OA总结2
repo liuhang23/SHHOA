@@ -1,0 +1,134 @@
+一.递归技巧
+  1.使用时只引用一个根节点，表示以某节点为顶点的树
+  	 一颗树的组成可以看成两部分 ： 一个顶点，0或多个子树(以子节点为顶点的树)
+  	 显示一棵树中所有节点的信息就是显示这两部分的信息
+  
+二.使用递归展现---部门信息显示树形结构
+   session是一级缓存（作用范围小），sessionFactory是二级缓存（作用于服务器缓存）
+   1.在页面显示树状结构
+      在addUI添加页面(editUI修改页面)准备数据
+      List<Department> toList = departmentService.findTopList(); //查询出顶点列表
+      List<Department> departmentList = DepartmentUtils.getAllDepartments(toList); //通过工具类修改部门为树状结构	 
+      ActionContext.getContext.put("departmentList",departmentList);
+      
+   2.部门树状结构工具类分析
+	 public static List<Department> getAllDepartments(List<Department> toList){
+	 	List<Depatment> list = new List<Department>;
+	 	walkDepartmentTreeList(toList,""┣"",list);
+	 	retrun toList;
+	 }	
+
+	public static void walkDepartmentTreeList(Collection<Department> toList,String profix,List<Department> list){
+		for(Department top : toList){
+		 //顶点   (使用副本，因为原对象存在副本中)
+		 Department copy = new Department();
+		 copy.setId(top.getId());
+		 copy.setName(prefix +  top.getName());
+		 list.add(copy);
+	     //子树
+	     walkDepartmentTreeList(top.getChildren,"  " + prefix,list); //使用全角空格
+		}
+	}
+	
+	3.由于set默认为无序，所以在页面会出现无序，可以在xx.hbm.xml设置排序方式解决
+		order-by属性，指定是sql的orderby字句内容  (Asc升序)  (Desc降序)
+		<set name="children" cascade="delete" order-by="id ASC">
+			<key column="parentId"></key>
+			<one-to-many class="Department" />
+		</set>
+		
+三.系统管理模块-----改进（部门管理，岗位管理，用户管理）
+  1.抽取添加与修改jsp页面中公共代码
+  	1.1在WEB-INF的jsp包中新建public文件夹，存放commons.jspf
+  	    <%@ page language="java" contentType="text/html; charset=UTF-8"  pageEncoding="UTF-8"%>
+		<%@ taglib prefix="s" uri="/struts-tags" %>    
+		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<script language="javascript" src="${pageContext.request.contextPath}/script/jquery.js"></script>
+		<script language="javascript" src="${pageContext.request.contextPath}/script/pageCommon.js" charset="utf-8"></script>
+		<script language="javascript" src="${pageContext.request.contextPath}/script/PageUtils.js" charset="utf-8"></script>
+		<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/style/blue/pageCommon.css" />
+  	1.2在其他页面引用<%@include file="/WEB-INF/jsp/public/commons.jsp" %>	
+  	
+  2.Action : 增加BaseAction
+  	 我们所写的Action都继承这个类  : 基本的action都实现ModelDrivern接口，实现getModel方法，可以抽离出，方便以后action
+  	 RoleAction extends BaseAction<Role>
+  	 抽取ModelDriven支持和Service实例声明
+  	   abstract class BaseAction<T> extends ActionSupport implements  ModelDriven<T> 
+  	   {  
+  			    protected T model = null;
+				public BaseAction() {
+					try {
+						// 通过反射获取model的真实类型
+						ParameterizedType pt = (ParameterizedType) this.getClass().getGenericSuperclass();
+						Class<T> clazz = (Class<T>) pt.getActualTypeArguments()[0];
+						// 通过反射创建model的实例
+						model = clazz.newInstance();
+					} catch (Exception e) {
+						throw new RuntimeException();
+					}
+				}
+				@Override
+				public T getModel() {
+					return model;
+				}
+			    //Service实例的声明
+				@Resource
+				protected RoleService roleService;
+				@Resource
+				protected DepartmentService departmentService;
+		}  	   
+  3.Service : 合并Service与Dao
+     3.1使用两层	(合并Service和Dao)
+       将 view   +  Service + Dao 
+       改为:view +  Service(原Service + 原Dao)
+       @Deprecated(过时的)
+          将BaseDao改为DaoSupport ，BaseDaoImpl 改为DaoSupportImpl  (并非为dao层，此处为dao支持)
+          RoleService extends DaoSupport<Role>
+          RoleServiceImpl extends DaoSupportmpl<Role> implements  RoleService
+          	
+	 3.2在Service可以直接使用hibernateSession操作实体	
+
+	 
+四.用户管理	 
+	 流程总结：实现增删查改(CURD)一组功能步骤
+     1.做Action相关的准备(Action、jsp、配置)
+     	1.1，创建 MyAction extends BaseAction.
+		1.2，定义出Action中的方法，要写出方法名、作用、返回值。
+		1.3，创建出所用到的JSP页面（目前还没有具体内容）。
+		1.4，配置Action：
+		   1.4.1，在MyAction上写注解 @Controller与@Scope("prototype").
+		   1.4.2，在strtus.xml中配置这个Action与所用到的result.
+     	
+     2.做Service相关配置(接口、实现类、配置)
+        2.1，创建接口MyService extends DaoSupport.
+		2.2，创建实现类MyServiceImpl extends DaoSupportImpl implements UserService.   
+		2.3，配置：在MyServiceImpl上写注解: @Service 与 @Transactional
+		2.4，声明：在BaseAction中声明     :  @Resource protected MyService myService
+		
+     3.填空(Action方法、Service方法、jsp页面)
+ 	   3.1，Action方法。
+       3.2，新增的Service方法。
+	   3.3，JSP页面的内容：
+			a，拷贝静态页面中的源代码到JSP中。
+	        b，包含进来公共的资源：<%@ include file=“../public/commons.jspf" %>
+		    c，把 ../ 替换为 ${pageContext.request.contextPath}/
+	        d，修改页面内容（使用自定义标签）
+ 	   
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
