@@ -10,6 +10,8 @@ public class Role {
 	private String description; // 描述
 	private Set<User> users = new HashSet<User>();// 对应员工
 
+	private Set<Privilege> privileges = new HashSet<Privilege>();// 设置对应权限
+
 	// gettet/setter
 	public Long getId() {
 		return id;
@@ -41,6 +43,14 @@ public class Role {
 
 	public void setUsers(Set<User> users) {
 		this.users = users;
+	}
+
+	public Set<Privilege> getPrivileges() {
+		return privileges;
+	}
+
+	public void setPrivileges(Set<Privilege> privileges) {
+		this.privileges = privileges;
 	}
 
 }

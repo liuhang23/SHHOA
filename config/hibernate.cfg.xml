@@ -21,6 +21,7 @@
 		<mapping resource="com/smartlab/oa/domain/User.hbm.xml" />
 		<mapping resource="com/smartlab/oa/domain/Role.hbm.xml" />
 		<mapping resource="com/smartlab/oa/domain/Department.hbm.xml" />
+		<mapping resource="com/smartlab/oa/domain/Privilege.hbm.xml" />
 	</session-factory>
 
 </hibernate-configuration>

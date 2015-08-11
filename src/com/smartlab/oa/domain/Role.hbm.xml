@@ -5,7 +5,7 @@
 
 <hibernate-mapping package="com.smartlab.oa.domain">
 
-	<class name="Role" table="SHHOA_Role">
+	<class name="Role" table="SHHOA_role">
 		<id name="id">
 			<generator class="native"></generator>
 		</id>
@@ -17,6 +17,12 @@
 			<key column="roleId"></key>
 			<many-to-many class="User" column="userId"></many-to-many>
 		</set>
+		
+		<!-- privileges属性，本类与Privilege的多对多 -->
+		<set name="privileges" table="SHHOA_role_privilege">
+			<key column="roleId"></key>
+			<many-to-many class="Privilege" column="privilegeId"></many-to-many>
+		</set>
+		
 	</class>
-
 </hibernate-mapping>
