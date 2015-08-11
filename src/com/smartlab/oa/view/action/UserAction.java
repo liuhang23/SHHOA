@@ -3,6 +3,7 @@ package com.smartlab.oa.view.action;
 import java.util.HashSet;
 import java.util.List;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 
@@ -58,7 +59,8 @@ public class UserAction extends BaseAction<User> {
 		List<Role> roleList = roleService.getByIds(roleIds);
 		model.setRoles(new HashSet<Role>(roleList)); // hashSet集合接受另一集合参数
 		// >>设置默认密码1234
-		model.setPasswrod("1234");
+		String md5Digest = DigestUtils.md5Hex("1234");
+		model.setPasswrod(md5Digest);
 		// 保存到数据库中
 		userService.save(model);
 		return "toList";
@@ -116,8 +118,9 @@ public class UserAction extends BaseAction<User> {
 	public String initPassword() throws Exception {
 		//1.从数据库中去除原对象
 		User user = userService.getById(model.getId());
-		//2.设置要修改的属性
-		user.setPasswrod("1234");
+		//2.设置默认密码为1234（要使用MD5摘要）
+		String md5Digest = DigestUtils.md5Hex("1234");
+		user.setPasswrod(md5Digest);
 		//3.更新到数据库
 		userService.update(user);
 		return "toList";

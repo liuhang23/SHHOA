@@ -139,5 +139,22 @@
     			    <s:a action></s:a>
     			    ...
     			</s:form>
-
-
+       4.事务处理
+         @Transactionnal
+            可以写在方法上 : 对本方法有效
+            可以写在类上   : 对本类所有的public方法有效，
+            	  对子类中方法有效，对父类声明的方法无效
+			 // @Transactional注解可以被继承
+			 // @Transactional注解对父类中声明的方法无效
+	    
+	     return Collections.EMPTY_LIST;  //返回空的集合		 
+	  
+	  5.MD5摘要加密
+	     commons-codec.jar 提供md5算法
+	     文本 ------> 摘要
+	     1字节 = 8位二进制  =  4位十六进制
+		 128位二进制 = 16字节（16*8） = 32个十六进制（32*4）
+	     
+	    // >>设置默认密码1234
+		String md5Digest = DigestUtils.md5Hex("1234");
+		model.setPasswrod(md5Digest);
