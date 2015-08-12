@@ -39,9 +39,17 @@
 		 <action name="user_*" class="userAction" method="{1}">
 		 		<result name="list">/WEB-INF/jsp/userAction/list.jsp</result>
 		 		<result name="saveUI">/WEB-INF/jsp/userAction/saveUI.jsp</result>
-		 		<result name="toList" type="redirectAction">user_list?parentId=${parentId}</result>
+		 		<result name="toList" type="redirectAction">user_list</result>
+		 		
+		 		<result name="loginUI">/WEB-INF/jsp/userAction/loginUI.jsp</result>
+		 		<result name="logout">/WEB-INF/jsp/userAction/logout.jsp</result>
+		 		<result name="toIndex" type="redirect">/index.jsp</result>
 		 </action>
-
+		 
+		 <!-- 首页 -->
+		 <action name="home_*" class="homeAction" method="{1}"> 
+		 		<result name="{1}">/WEB-INF/jsp/homeAction/{1}.jsp</result>
+		 </action>
     </package>
 	<!--Add packages here  -->
    

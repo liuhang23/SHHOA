@@ -25,9 +25,29 @@
 				     ...
 		4.3使用权限 ：
 		    1，登录、注销、主页面。(UserAction)
+		      *登陆<s:textfiled />
+		     	   <s:passwrod showPassword="false">
 		      
-		    
-		    
+		      *请求重定向地址：<result name="toIndex" type="redirect">/index.jsp</result>
+		      
+		      *显示错误信息   
+					Action中
+						addFieldError("name", "有错了！");
+						addFieldErroe("login","登录名或密码错误");
+					JSP中：
+						<s:fielderror fieldName="name"/>
+						<s:fielderror/>	显示全部错误消息
+						
+			 *主页面
+			 	<frameset rows=“100px,*,30px”>
+				    <frame src=“top.jsp”>
+				    <frameset cols=“150px,*”>
+				        <frame name=“left” src=“left.jsp”>
+				        <frame name=“right” src=“right.jsp”>
+				    </frameset>
+				    <frame src=“bottom.jsp”>
+				</frameset>
+		    			
 			2，左侧的菜单是根据权限显示的。
 			3，右侧页面中的链接是根据权限显示的。
 			4，拦截每一个action请求，验证用户是否有权限访问...

@@ -60,7 +60,7 @@ public class UserAction extends BaseAction<User> {
 		model.setRoles(new HashSet<Role>(roleList)); // hashSet集合接受另一集合参数
 		// >>设置默认密码1234
 		String md5Digest = DigestUtils.md5Hex("1234");
-		model.setPasswrod(md5Digest);
+		model.setPassword(md5Digest);
 		// 保存到数据库中
 		userService.save(model);
 		return "toList";
@@ -120,7 +120,7 @@ public class UserAction extends BaseAction<User> {
 		User user = userService.getById(model.getId());
 		//2.设置默认密码为1234（要使用MD5摘要）
 		String md5Digest = DigestUtils.md5Hex("1234");
-		user.setPasswrod(md5Digest);
+		user.setPassword(md5Digest);
 		//3.更新到数据库
 		userService.update(user);
 		return "toList";
@@ -133,13 +133,21 @@ public class UserAction extends BaseAction<User> {
 	
 	/**登陆  : 重定向到首页*/
 	public String login() throws Exception{
-		
-		return "toIndex";
+		User user = userService.findByLoginNameAndPassword(model.getLoginName(),model.getPassword());
+		if(user == null){
+			addFieldError("login", "登录名或密码错误");
+			return "loginUI";
+		}else{ 
+			//用户登陆
+			ActionContext.getContext().getSession().put("user", user);
+			return "toIndex";
+		}
 	}
 	
 	/**注销*/
 	public String logout() throws Exception{
-		
+		//将user对象从值栈中移除
+		ActionContext.getContext().getSession().remove("user");
 		return "logout";
 	}
 	

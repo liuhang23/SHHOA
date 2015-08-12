@@ -11,7 +11,7 @@ public class User {
 
 	private String loginName; // 登陆名
 	private String name;// 真实姓名
-	private String passwrod;// 密码
+	private String password;// 密码
 	private String gender;// 性别
 	private String phoneNumber; // 电话号码
 	private String email; // 邮箱
@@ -69,12 +69,12 @@ public class User {
 		this.loginName = loginName;
 	}
 
-	public String getPasswrod() {
-		return passwrod;
+	public String getPassword() {
+		return password;
 	}
 
-	public void setPasswrod(String passwrod) {
-		this.passwrod = passwrod;
+	public void setPassword(String password) {
+		this.password = password;
 	}
 
 	public String getEmail() {

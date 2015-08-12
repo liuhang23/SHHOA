@@ -9,7 +9,7 @@
 			<generator class="native"></generator>
 		</id>
 		<property name="loginName"></property>
-		<property name="passwrod"></property>
+		<property name="password"></property>
 		<property name="email"></property>
 		<property name="phoneNumber"></property>
 		<property name="name"></property>

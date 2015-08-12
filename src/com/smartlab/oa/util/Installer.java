@@ -37,7 +37,7 @@ public class Installer {
 		User user = new User();
 		user.setLoginName("admin");
 		user.setName("超级管理员");
-		user.setPasswrod(DigestUtils.md5Hex("admin"));  //md5摘要加密
+		user.setPassword(DigestUtils.md5Hex("admin"));  //md5摘要加密
 		session.save(user);  //保存
 		
 		//==================================
