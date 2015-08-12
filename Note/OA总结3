@@ -16,14 +16,18 @@
 			 1*建立权限实体 ： javaBean(privilege) -----xxx.hbm.xml ----建表
 			 2*实现初始化权限数据的功能 （可支持多种不同数据库） ： 
 			 	    insert into ...
-			   在util包中新建 Installer.java（顶级菜单对二级菜单分类）
+			   在util包中新建（安装权限数据类）： Installer.java（顶级菜单对二级菜单分类）
 			 
-			 
-		4.2分配权限 ：1.给角色分配权限。
+		4.2分配权限 ：1.给角色分配权限。（类似修改）   RoleAction
+		  			   选多个 pid=1&pid=2&pid=3
 				     2.用户的权限就是用户所有角色的权限。
+				       jquery选择器 ： $("[name=privilegeIds]").attr("checked",this.checked);  实现全选，通过id查找
 				     ...
 		4.3使用权限 ：
-		    1，登录、注销、主页面。
+		    1，登录、注销、主页面。(UserAction)
+		      
+		    
+		    
 			2，左侧的菜单是根据权限显示的。
 			3，右侧页面中的链接是根据权限显示的。
 			4，拦截每一个action请求，验证用户是否有权限访问...

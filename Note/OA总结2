@@ -135,6 +135,7 @@
     		 	    <s:radio name="gender" list="{'男','女'}">
     			    
     			    <s:checkbox>
+      (对应多个值的) <s:checkboxlist></s:checkboxlist>   
     			    <s:submit> 
     			    <s:a action></s:a>
     			    ...

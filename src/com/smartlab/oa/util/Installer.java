@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.smartlab.oa.domain.Privilege;
 import com.smartlab.oa.domain.User;
 
-
+//安装权限数据类
 @Component
 public class Installer { 
 	

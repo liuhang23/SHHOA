@@ -7,6 +7,7 @@ import javax.annotation.Resource;
 import com.opensymphony.xwork2.ActionSupport;
 import com.opensymphony.xwork2.ModelDriven;
 import com.smartlab.oa.service.DepartmentService;
+import com.smartlab.oa.service.PrivilegeService;
 import com.smartlab.oa.service.RoleService;
 import com.smartlab.oa.service.UserService;
 
@@ -44,5 +45,7 @@ public abstract class BaseAction<T> extends ActionSupport implements
 	protected DepartmentService departmentService;
 	@Resource
 	protected UserService userService;
+	@Resource
+	protected PrivilegeService privilegeService;
 
 }

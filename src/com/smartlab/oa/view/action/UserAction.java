@@ -126,6 +126,26 @@ public class UserAction extends BaseAction<User> {
 		return "toList";
 	}
 
+	/**登陆页面*/
+	public String loginUI() throws Exception{
+		return "loginUI";
+	}
+	
+	/**登陆  : 重定向到首页*/
+	public String login() throws Exception{
+		
+		return "toIndex";
+	}
+	
+	/**注销*/
+	public String logout() throws Exception{
+		
+		return "logout";
+	}
+	
+	
+	
+	
 	// -------
 	public Long getDepartmentId() {
 		return departmentId;
