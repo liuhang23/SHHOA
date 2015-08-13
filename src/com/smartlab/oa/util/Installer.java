@@ -44,7 +44,7 @@ public class Installer {
 		//保存权限数据
 		Privilege menu,menu1,menu2,menu3,menu4,menu5;  //声明Privilege对象
 		//----------------------------------
-		menu = new Privilege("系统管理员",null,null);
+		menu = new Privilege("系统管理",null,null);
 		menu1 = new Privilege("岗位管理","/role_list",menu);
 		menu2 = new Privilege("部门管理","/department_list",menu);
 		menu3 = new Privilege("用户管理","/user_list",menu);

@@ -49,7 +49,28 @@
 				</frameset>
 		    			
 			2，左侧的菜单是根据权限显示的。
-			
+				*1.显示所有  （目录结构是程序安装初始化时，管理员权限目录就固定）
+				 **目录结构使用最大的作用域Application（整个应用程序都共享）,将不会变的值存在内存中缓存起来，减少每次查询数据库
+				 **使用InitListener implements ServletContextListener{  (监听器)
+				  （会产生懒加载异常）  解决方法 : 关闭懒加载功能  lazy = "false"
+				   //产生懒加载异常，主要是未加载相关联的对象信息，session已经关闭。  可以关闭懒加载特性
+				      public void contextInitialized(ServletContextEvent sce) {
+							// 获取容器与相关的Service对象  获取同一个容器对象 WebApplicationContextUtils
+							ApplicationContext ac = WebApplicationContextUtils.getWebApplicationContext(sce.getServletContext());
+							PrivilegeService privilegeService = (PrivilegeService) ac.getBean("privilegeServiceImpl");
+					
+							// 准备数据：topPrivilegeList
+							List<Privilege> topPrivilegeList = privilegeService.findTopList();
+							sce.getServletContext().setAttribute("topPrivilegeList", topPrivilegeList);
+							System.out.println("------------> 已准备数据 <------------");
+						}
+					
+						public void contextDestroyed(ServletContextEvent arg0) {
+							
+						}  
+					}	
+					
+				*2.根据权限显示
 			
 			3，右侧页面中的链接是根据权限显示的。
 			4，拦截每一个action请求，验证用户是否有权限访问...

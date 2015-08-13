@@ -14,6 +14,8 @@ import com.smartlab.oa.domain.Role;
 import com.smartlab.oa.domain.User;
 import com.smartlab.oa.service.UserService;
 import com.smartlab.oa.util.DepartmentUtils;
+import com.smartlab.oa.util.StringUtil;
+
 
 @Controller
 @Scope("prototype")

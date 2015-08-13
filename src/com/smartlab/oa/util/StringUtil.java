@@ -17,7 +17,7 @@ import sun.misc.BASE64Encoder;
  * @version 1.0.0
  *
  */
-public class StringUtils {
+public class StringUtil {
 
 	/**
 	 * 将一个日期转换成String 
@@ -117,7 +117,7 @@ public class StringUtils {
 		if(objects!=null && objects.length>0){
 			format = objects[0];
 		}
-		return StringUtils.formatDoubleToString((num/totalCount)*100,format)+"%";
+		return StringUtil.formatDoubleToString((num/totalCount)*100,format)+"%";
 	}
 	
 

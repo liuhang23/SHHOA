@@ -5,7 +5,7 @@
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 
-	<!-- 配置Spring的用于初始化容器对象的监听器 -->
+	<!-- 配置Spring的用于初始化容器对象的监听器 先配置先执行-->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -13,8 +13,19 @@
 		<param-name>contextConfigLocation</param-name>
 		<param-value>classpath:applicationContext*.xml</param-value>
 	</context-param>
+	
+	<!--1、需要先获取注入的容器对象，用于做初始化工作的监听器，
+	    2、一定要配置到Spring的ContextLoaderListener的后面
+     -->
+	<listener>
+		<listener-class>com.smartlab.oa.util.InitListener</listener-class>
+	</listener>
+	
 
-	<!-- 配置Spring的用于解决懒加载问题的过滤器 -->
+
+	<!-- 1.配置Spring的用于解决懒加载问题的过滤器，只解决同一个请求的懒加载异常 
+		 2.不同请求无法解决，只能关闭
+	-->
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
 		<filter-class>org.springframework.orm.hibernate3.support.OpenSessionInViewFilter</filter-class>
