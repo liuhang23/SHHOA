@@ -38,6 +38,11 @@ public class User {
 	public boolean isAdmin() {
 		return "admin".equals(loginName);
 	}
+	
+	/** 判断本用户是否有指定URL的权限  a.equals(b)   a(可能为空的值)  b(一定不为空)  避免空指针异常*/
+	
+	
+	
 
 	public User() {
 

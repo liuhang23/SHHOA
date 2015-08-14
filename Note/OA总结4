@@ -1,0 +1,19 @@
+一.显示树状结构，页面选中效果
+   *1.jquery中的方法 ：parent(选择上一级元素)    parents(选择所有上级元素(前辈))
+           children(选择下一级元素)        find(选择所有后代元素) 
+           siblings(选择同级元素（兄弟）)   prev(选择兄弟元素（前一个）)   next(选择弟元素(后一个))
+           
+   *2.$(function(){  
+          //文档加载完执行
+          //指定事件处理函数
+          $("[name = privilegeIds]").click(function(){
+                 //当选中或取消一个权限时,也同时选中或取消所有下级权限
+          		$(this).siblings("ul").find("input").attr("checked",this.checked);
+          		//当选中一个权限时，也要选中所有的直接上级权限
+          		if(this.checked == true){
+          			$(this).parents("li").children("input").attr("checked",this.checked);
+          		}
+          });
+      });       
+      
+二. 自定义标签（解决不同权限用户登录后，显示不同有权限的链接）  
