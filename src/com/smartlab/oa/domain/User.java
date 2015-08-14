@@ -18,7 +18,7 @@ public class User {
 	private String description; // 说明
 
 	/** 判断本用户是否有指定名称的权限 */
-	public boolean hashPrivilegeByName(String name) {
+	public boolean hasPrivilegeByName(String name) {
 		// 超级管理员有所有的权限
 		if (isAdmin()) {
 			return true;
@@ -33,13 +33,29 @@ public class User {
 		}
 		return false;
 	}
+	
+	/** 判断本用户是否有指定URL的权限  a.equals(b)   a(可能为空的值)  b(一定不为空)  避免空指针异常*/
+	public boolean hasPrivilegeByUrl(String privUrl) {
+		// 超级管理员有所有的权限
+		if (isAdmin()) {
+			return true;
+		}
+		// 普通用户判断是否含有这个权限
+		for (Role role : roles) {
+			for (Privilege privilege : role.getPrivileges()) {
+				if (privUrl.equals(privilege.getUrl())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	/** 判断本用户是否是超级管理员 */
 	public boolean isAdmin() {
 		return "admin".equals(loginName);
 	}
 	
-	/** 判断本用户是否有指定URL的权限  a.equals(b)   a(可能为空的值)  b(一定不为空)  避免空指针异常*/
 	
 	
 	
