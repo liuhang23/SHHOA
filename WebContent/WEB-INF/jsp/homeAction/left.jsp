@@ -5,7 +5,9 @@
 <%@ include file="/WEB-INF/jsp/public/commons.jspf"%>
 <link type="text/css" rel="stylesheet" href="style/blue/menu.css" />
 <script type="text/javascript">
-	
+	function menuClick( menu){
+		$(menu).next().toggle();  /*next() 找到当前(div)紧跟的同胞元素ul(二级菜单) */		
+	}
 </script>
 </head>
 
@@ -14,26 +16,30 @@
 
 		<ul id="MenuUl">
 			<!-- 显示一级菜单  程序启动就加载缓存 -->
-			<s:iterator value="#application.topPrivilegeList">
+		 <s:iterator value="#application.topPrivilegeList">
+		  <s:if test="#session.user.hashPrivilegeByName(name)">
 			<li class="level1">
 				<div onClick="menuClick(this)" class="level1Style">
-					<img src="style/images/MenuIcon/FUNC20001.gif" class="Icon" />
+					<img src="style/images/MenuIcon/${id}.gif" class="Icon" />
 					${name}
 				</div>
 				
-				<ul style="display: none;" class="MenuLevel2">
+				<ul  class="MenuLevel2"  >
 					<!--显示二级菜单 -->
 					<s:iterator value="children">
-					<li class="level2">
-						<div class="level2Style">
-							<img src="style/images/MenuIcon/menu_arrow_single.gif" /> 
-							<a target="right" href="System_Role/list.html"> ${name}</a>
-						</div>
-					</li>
+					  <s:if test="#session.user.hashPrivilegeByName(name)">
+						<li class="level2">
+							<div class="level2Style">
+								<img src="style/images/MenuIcon/menu_arrow_single.gif" /> 
+								<a target="right" href="${pageContext.request.contextPath}${url}.action"> ${name}</a>
+							</div>
+						</li>
+					  </s:if>
 					</s:iterator>
 				</ul>
 			</li>
-			</s:iterator>
+		   </s:if>
+		  </s:iterator>
 		</ul>
 	
 	</div>

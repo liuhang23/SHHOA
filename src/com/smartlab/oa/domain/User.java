@@ -17,6 +17,28 @@ public class User {
 	private String email; // 邮箱
 	private String description; // 说明
 
+	/** 判断本用户是否有指定名称的权限 */
+	public boolean hashPrivilegeByName(String name) {
+		// 超级管理员有所有的权限
+		if (isAdmin()) {
+			return true;
+		}
+		// 普通用户判断是否含有这个权限
+		for (Role role : roles) {
+			for (Privilege privilege : role.getPrivileges()) {
+				if (privilege.getName().equals(name)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	/** 判断本用户是否是超级管理员 */
+	public boolean isAdmin() {
+		return "admin".equals(loginName);
+	}
+
 	public User() {
 
 	}

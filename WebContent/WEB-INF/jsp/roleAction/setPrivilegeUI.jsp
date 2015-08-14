@@ -4,9 +4,9 @@
 <head>
 <title>权限编辑</title>
 <%@ include file="/WEB-INF/jsp/public/commons.jspf"%>
-<script language="javascript" src="../script/jquery_treeview/jquery.treeview.js"></script>
-<link type="text/css" rel="stylesheet" href="../style/blue/file.css" />
-<link type="text/css" rel="stylesheet" href="../script/jquery_treeview/jquery.treeview.css" />
+<script language="javascript" src="${pageContext.request.contextPath}/script/jquery_treeview/jquery.treeview.js"></script>
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/style/blue/file.css" />
+<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/script/jquery_treeview/jquery.treeview.css" />
 
 </head>
 <body>
@@ -49,7 +49,41 @@
 					<tbody id="TableData">
 						<tr class="TableDetail1">
 							<!-- 显示权限树 -->
-							<td><s:checkboxlist name="privilegeIds" list="#privilegeList" listKey="id" listValue="name"></s:checkboxlist> </td>
+							<td>
+								<%-- 
+								 <s:checkboxlist name="privilegeIds" list="#privilegeList" listKey="id" listValue="name">
+								</s:checkboxlist> 
+								 --%>
+								<%-- <s:iterator value="privilegeList">
+									<input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"
+									      <s:property value="%{id in privilegeIds ? 'checked': ''}"/>
+									> 
+									<label for="cb_${id}">${name}</label>
+								   <br/>								
+								</s:iterator> --%>
+								<!--显示树状结构内容  -->
+								<ul id="tree">
+									<s:iterator value="#application.topPrivilegeList">
+										<li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"  <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+											<label for="cb_${id}"><span class="folder">${name}</span></label>
+											<ul>
+											 <s:iterator value="children">
+												<li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}" <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+													<label for="cb_${id}"><span class="folder">${name}</span></label>	
+													<ul>
+														<s:iterator value="children">
+														<li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"  <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+															<label for="cb_${id}"><span class="folder">${name}</span></label></li>
+														</s:iterator>
+													</ul>										
+												</li>											 
+											 </s:iterator>											
+											</ul>
+										</li>									
+									</s:iterator>
+								</ul>
+								
+							</td>
 						</tr>
 					</tbody>
 					
@@ -57,6 +91,9 @@
             </div>
         </div>
         
+        <script type="text/javascript">
+        		$("#tree").treeview();
+        </script>
         <!-- 表单操作 -->
         <div id="InputDetailBar">
             <input type="image" src="${pageContext.request.contextPath}/style/images/save.png"/>
