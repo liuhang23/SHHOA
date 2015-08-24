@@ -40,6 +40,17 @@ public class User {
 		if (isAdmin()) {
 			return true;
 		}
+		
+		// >> 去掉后面的参数
+		int pos = privUrl.indexOf("?");
+		if(pos > -1){
+			privUrl = privUrl.substring(0,pos);
+		}
+		// >> 去掉UI后缀
+		if(privUrl.endsWith("UI")){
+			privUrl = privUrl.substring(0,privUrl.length() -2);
+		}
+		
 		// 普通用户判断是否含有这个权限
 		for (Role role : roles) {
 			for (Privilege privilege : role.getPrivileges()) {

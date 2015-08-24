@@ -51,6 +51,7 @@ public class AnchorTag extends AbstractClosingTag {
 	protected String anchor;
 	protected String forceAddSchemeHostAndPort;
 
+   //添加1	
 	@Override
 	public int doEndTag() throws JspException {
 		// 当前登录用户
@@ -66,6 +67,7 @@ public class AnchorTag extends AbstractClosingTag {
 			return EVAL_PAGE; // 不生成与显示超链接 标签，只是继续执行页面中后面的代码
 		}
 	}
+   //==================================================
 
 	public Component getBean(ValueStack stack, HttpServletRequest req, HttpServletResponse res) {
 		return new Anchor(stack, req, res);

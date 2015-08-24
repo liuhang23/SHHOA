@@ -17,7 +17,7 @@
 		<ul id="MenuUl">
 			<!-- 显示一级菜单  程序启动就加载缓存 -->
 		 <s:iterator value="#application.topPrivilegeList">
-		  <s:if test="#session.user.hashPrivilegeByName(name)">
+		  <s:if test="#session.user.hasPrivilegeByName(name)">
 			<li class="level1">
 				<div onClick="menuClick(this)" class="level1Style">
 					<img src="style/images/MenuIcon/${id}.gif" class="Icon" />
@@ -27,7 +27,7 @@
 				<ul  class="MenuLevel2"  >
 					<!--显示二级菜单 -->
 					<s:iterator value="children">
-					  <s:if test="#session.user.hashPrivilegeByName(name)">
+					  <s:if test="#session.user.hasPrivilegeByName(name)">
 						<li class="level2">
 							<div class="level2Style">
 								<img src="style/images/MenuIcon/menu_arrow_single.gif" /> 

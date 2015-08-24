@@ -5,7 +5,11 @@
 	http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
 
 
-	<!-- 配置Spring的用于初始化容器对象的监听器 先配置先执行-->
+	<!-- 配置Spring的用于初始化容器对象的监听器（上下文） 先配置先执行 
+		1.spring如何创建对象?  
+		   启动时加载classpath:applicationContext.xml,通过spring拦截器找到BeanFactoty通过xml解析去扫描所有配置文件中所有bean节点
+		   ，创建对象，将类实例化。
+	-->
 	<listener>
 		<listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
 	</listener>
@@ -23,8 +27,9 @@
 	
 
 
-	<!-- 1.配置Spring的用于解决懒加载问题的过滤器，只解决同一个请求的懒加载异常 
-		 2.不同请求无法解决，只能关闭
+	<!-- 实现登陆权限拦截
+		 1.配置Spring的用于解决懒加载问题的过滤器，只解决同一个请求的懒加载异常 
+		 2.不同请求无法解决，只能关闭 lazy = 'false'
 	-->
 	<filter>
 		<filter-name>OpenSessionInViewFilter</filter-name>
