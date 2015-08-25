@@ -4,6 +4,7 @@
    3.分包（src , config , test）
    	 spring与struts整合  
    	 	1，在web.xml中配置Spring的监听器
+   	 	2.添加jar包 struts2-spring-plugin-2.1.8.1.jar
    	 spring与Hibernate整合
    	 	1，管理SessionFactory实例（只需要一个）: 让Spring容器进行管理
 		现在applicationContext.xml中配置hibernate的sessionFactory的bean的配置
