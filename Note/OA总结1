@@ -1,5 +1,7 @@
 一.SHH整合（12天完成）8月5号 ----8月17号（迷恋+热情）
    1.搭建环境（引入jar包）
+   		// 让主窗口的title与当前操作的（右侧的）窗口的title一致
+	    parent.document.title = "OA - " + document.title;
    2.配置文件(applicationContext.xml,hibernate.cfg.xml,struts.xml)
    3.分包（src , config , test）
    	 spring与struts整合  
@@ -75,9 +77,8 @@
          
     1.3   
     
-    
-三.功能实现(	1，写Action类，写Action中的方法，确定Service中的方法。2，写Service方法，确定Dao中的方法。
-	3，写Dao方法。4，写JSP)
+三.功能实现(	步骤 ：1，写Action类，写Action中的方法，确定Service中的方法。2，写Service方法，确定Dao中的方法。
+			      3，写Dao方法。4，写JSP)
 	1、设计实体 --> JavaBean --> xxx.hbm.xml(同时添加到hibernate.cfg.xml) --> 建表(执行SpringTest来映射实体到数据库中生成对象的表)
 	     1.1️有几个实体(一般是一组增删查改)
 	2.分析有几个功能，对应几个请求。
@@ -86,17 +87,17 @@
 	   			    3.用户管理  （一个用户可以有多个岗位（））
 	  
 	3.实现功能
-	    1，写Action类，写Action中的方法，确定Service中的方法。
-		     				    <-->删除   转发与重定向区别） 请求数量    地址栏(URL)
-		 1.1 岗位管理 --- 列表    <-->添加     转发：      	  1 		不变
-		     					 <-->修改    重定向：	          2		    变化
+	   1，写Action类，写Action中的方法，确定Service中的方法。
+		     				      			（转发与重定向区别） 请求数量    地址栏(URL)
+		 1.1 岗位管理 --- 列表     <-->删除    	  转发：      	  1 		不变
+		     				<-->添加  <-->修改    重定向：	      2		    变化
 			
 		     列表与删除功能都只有一个请求 、 添加与修改功能都是有两个请求（重定向到列表）
 			 增删改查共4个功能，每个Action方法处理一种请求，所以需要有相应的6个Action方法，每个Action方法处理一种请求
 		 1.2  作用		方法名		返回值		对应的页面
 		     ----------------------------------------------------（Action功能函数编写）
  			  列表		list()		list		list.jsp	
-		      删除		delete()	toList
+		      删除		delete()	toList(重定向到列表)
 			  添加页面	addUI()	    addUI		addUI.jsp
 			  添加		add()		toList
 			  修改页面	editUI()	editUI		editUI.jsp
@@ -158,7 +159,7 @@
 					//2.设置要修改的属性
 					role.setName(name);
 					role.setDescription(description);
-					//3.跟新到数据库
+					//3.更新到数据库
 					roleService.update(role);
 					return "toList";
 				}	
@@ -175,13 +176,15 @@
 		
 	3，写Dao方法。  使用@Responsity 让spring容器进行管理
 	4，写JSP   
-	   1.查询页面(list.jsp)  使用struts2的标签（引入标签库 <% taglib prefix="s" uri="/struts-tags" %>）
+	   1.查询页面(list.jsp)  使用struts2的标签（引入标签库 <%@ taglib prefix="s" uri="/struts-tags" %>）
 	   	 <s:iterator value="#roleList">  //循环迭代存放在ognl中的值(#)
  	   	     <s:property  value="id"/>
  	   	     <s:property  value="name"/>
  	   	     <s:a action="role_delete ? id = %{id}">删除</s:a> //通过%传入对应的id值，通过id删除
 	   	 	 <s:a action="role_editUI?id=%{id}">修改</s:a>
 	   	 </s:iterator>
+	   	 <br/>
+		<s:a action="role_addUI">跳转到添加页面</s:a>
 	   2.添加页面(addUI.jsp)  
 	   	  <s:from action="role_add">
 	   	  		<s:textfield name="name"></s:textfield>
@@ -190,6 +193,7 @@
 	   	  </s:form>
 	   3.编辑页面(editUI.jsp)
 	     <s:from action="role_edit">
+	     		<s:hidden name="id"></s:hidden>
 	     		<s:textfield name="name"></s:textfield>
 	     		<s:textarea  name="description"></s:textarea>
 	    		<s:submit value="提交"></s:submit>
@@ -200,6 +204,8 @@
      	  在请求中做判断<s:form action="role_%{ id == null ? 'add': 'edit'}">	
           <s:hidden name="id"></s:hidden>   //样式需要使用cssClass
           <s:textfield type="text" name="name" cssClass="InputStyle" > </s:textfield>
+        
+        小细节 ：菜单栏大标题menu.js  
          
 四.设计实体（在项目中磨练与成长，数不胜数的加班（毕业前三年，坚持不懈，你努力了就成功了））
    1.有几个实体（一般是一组增删查改）
@@ -210,7 +216,7 @@
 	  3.1 主键 
 	  3.2 关联关系 ：关联关系是一条线，有两端，每一段对应一个表达此关联关系的属性，有几个端指向本类，本类就有几个关联属性
 	  3.3 一般属性 ：分析所有有关的页面，找出表单中要填写的或是在显示页面中要显示的信息等
-	  3.4 特殊属性 ： 工龄（=当前时间-入职时间，存入职时间 ） ，年龄（存生日 = 当前时间 - 出生日期 ）    
+	  3.4 特殊属性 ： 工龄（=当前时间-入职时间，存入职时间 ） ，年龄（存生日 = 当前时间 - 出生日期 ）  性别（男,女,保密）  
    4.xxx.hbm.xml配置方式 (hibernate实体映射)     
      4.1  <!-- users属性，本类与User的一对多 -->  列出关联关系，写上注解
 	  	格式：?（属性名）属性，本类与 ?（关联实体名） 的?（关系）
@@ -241,13 +247,13 @@
 五.实体设计/映射 (CURD)         
    1.部门管理
      1.1基本的增删改查
-     1.2增删改查中对与"上级部门"的处理
+     1.2增删改查中对于"上级部门"的处理
      	<s:select name="parentId" cssClass="SelectStyle"
            list="#departmentList" listKey="id"   listValue="name"
            headerKey=""  headerValue="===请选择部门==="  />  
         // list用于显示数据  listKey表示提交给服务器的值   listValue用于在页面显示的值
             headerKey=""  headerValue="===请选择部门==="    （显示头名）
-        name的值parentId	提交给服务器后，先在（对象栈的）model中找，没有找到就在action中找，如果都没有，则可以在
+        name的值parentId	提交给服务器后，先在（对象栈的）model中找，没有找到就在action中(map)找，如果都没有，则可以在
         不影响model的结构，在action中封装parentId。 
         在添加方法中(save):由于model中没有parentId字段，而添加需要保存model，可以通过parentId找到对应父类对象。存放到model对应的parent字段，
         最后将model进行保存。初始添加，parentId为空，则需要进行空判断(在最底层封装空判断(BaseDaoImpl))。
@@ -258,23 +264,33 @@
 				return (T) getSession().get(clazz, id);
 			  }
 		}
+		修改注意点 ： model对象中没有parentId,需要为parentId赋值，同时修改保存所属上级部门
+		
 		删除注意点 : 存在上级下级主外键关联，需要设置级联（级联操作子部门 cascade="delete"）
 		<set name="children" cascade="delete">
 			<key column="parentId"></key>
-			<one-to-many class="Department" />
+			<one-to-many class="Department"/>
 		</set>
      1.3处理部门的树状结构显示
           List<Department> departmentList = null;
           if(partendId ==  null){ //查询顶级部门列表（初始化显示顶级部门列表）
 	          departmentList = departmentService.findTopList();
           }else{
-         	  departmentList  = departmentService.findChildren(parentId);   //查询子部门列表
+         	  departmentList = departmentService.findChildren(parentId);   //查询子部门列表
          }
          ActionContext.getContext().put("departmentList",departmentList);
      
       页面传参 <s:a action="department_list?parentId=%{id}">${name}</s:a>  
+      (产生懒加载 ： no Session)
+      存在实体关联会产生懒加载异常，业务层开Session，Transactional,在业务层查询完毕就关闭。
+      在显示层显示时，Session已经关闭
+         暂时处理方式  ： 在相关关联对象处关闭懒加载特性  lazy = "false"
+      
       管理模块处理3个细节问题
       问题1 :返回上一级(显示父类的父类id)  <s:a action="department_list?parentId=${#parent.parent.id}">返回到上一级</s:a>
+      		在查询中准备parent
+      		Department parent = departmentService.getById(parentId);
+	    	ActionContext.getContext().put("parent", parent);
       	返回页面通过id控制，当前上一级为pid=2,如果返回到上一级则需要父类的id.	
       		aaa1 ( pid=1)
 	 			 bbb1  (pid=2)
@@ -285,13 +301,14 @@
 					 ddd2
 		   aaa2
       	
-      问题2 :在子部门页面中添加部门，在路径中加parentId
-      问题3:新建应该还在此父类页面（产生原因，在struts.xml中redirectAction没有带跳转参数）
+      问题2 :在子部门页面中添加部门显示上级部门，在路径中加department_addUI?parentId=%{parentId}
+      问题3 :新建应该还在此父类页面（产生原因，在struts.xml中redirectAction没有带跳转参数）
       	原  <result name="toList" type="redirectAction">department_list</result>
       	改	<result name="toList" type="redirectAction">department_list?parentId=${parentId}</result>
       	删除页面也需要添加删除参数  action="department_delete?id=%{id}&parentId=%{parent.id}" 
      
    1.4使用懒加载，并不抛异常（Web程序中懒加载异常说明及解决方案）
+   	  报错 : org.hibernate.LazyInitializationException: could not initialize proxy - no Session
    	  产生原因：session在事务打开开始，事务提交后关闭，在页面第一次加载了懒加载属性，但事务提交完成，session已经关闭，则产生了懒加载异常。
       解决方案:Fileter或Interceptor先进后出，在页面请求完成后关闭session,Spring中有openSessionInviewFilter可以解决
       在web.xml中配置配置openSessionInviewFilter,配置放在struts2配置文件上
@@ -303,7 +320,7 @@
 			<filter-mapping>
 				<filter-name>OpenSessionInViewFilter</filter-name>
 				<!--struts2中采用配置后缀为.action -->
-				<url-pattern>*.action</url-pattern> 
+				<url-pattern>*.action</url-pattern>   //struts2配置扩展名为.action,  /*（拦截所有，不方便）
 			</filter-mapping>
       		
         Action --> Service --> Dao  

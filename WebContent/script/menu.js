@@ -53,7 +53,7 @@ function openPage(urlName) {
 	}
 	else if("desktop" == cfg.target){
 		parent.desktop.location = cfg.url;
-		parent.document.title = "Itcast OA - " + urlName;
+		parent.document.title = "OA - " + urlName;
 	}
 }
 

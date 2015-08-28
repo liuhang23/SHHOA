@@ -3,7 +3,7 @@
   	 一颗树的组成可以看成两部分 ： 一个顶点，0或多个子树(以子节点为顶点的树)
   	 显示一棵树中所有节点的信息就是显示这两部分的信息
   
-二.使用递归展现---部门信息显示树形结构
+二.使用递归展现---部门信息显示树形结构（使用工具将部门列表排序后放入集合中）
    session是一级缓存（作用范围小），sessionFactory是二级缓存（作用于服务器缓存）
    1.在页面显示树状结构
       在addUI添加页面(editUI修改页面)准备数据
@@ -11,15 +11,16 @@
       List<Department> departmentList = DepartmentUtils.getAllDepartments(toList); //通过工具类修改部门为树状结构	 
       ActionContext.getContext.put("departmentList",departmentList);
       
-   2.部门树状结构工具类分析
+   2.部门树状结构工具类分析 
+   		 (会出现问题 : 1.显示部门结构会变化  , 2. )
 	 public static List<Department> getAllDepartments(List<Department> toList){
-	 	List<Depatment> list = new List<Department>;
-	 	walkDepartmentTreeList(toList,""┣"",list);
-	 	retrun toList;
+	 	List<Depatment> list = new ArrayList<Department>();
+	 	walkDepartmentTreeList(topList,"┣",list);
+	 	retrun topList;
 	 }	
 
-	public static void walkDepartmentTreeList(Collection<Department> toList,String profix,List<Department> list){
-		for(Department top : toList){
+	public static void walkDepartmentTreeList(Collection<Department> topList,String prefix,List<Department> list){
+		for(Department top : topList){
 		 //顶点   (使用副本，因为原对象存在副本中)
 		 Department copy = new Department();
 		 copy.setId(top.getId());
