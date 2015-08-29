@@ -4,7 +4,7 @@
   	 显示一棵树中所有节点的信息就是显示这两部分的信息
   
 二.使用递归展现---部门信息显示树形结构（使用工具将部门列表排序后放入集合中）
-   session是一级缓存（作用范围小），sessionFactory是二级缓存（作用于服务器缓存）
+  
    1.在页面显示树状结构
       在addUI添加页面(editUI修改页面)准备数据
       List<Department> toList = departmentService.findTopList(); //查询出顶点列表
@@ -12,7 +12,11 @@
       ActionContext.getContext.put("departmentList",departmentList);
       
    2.部门树状结构工具类分析 
-   		 (会出现问题 : 1.显示部门结构会变化  , 2. )
+   		 (会出现问题 : 1.显示部门结构会变化（顺序）:  可以在xx.hbm.xml设置排序方式解决
+   		 	 		  2. session是一级缓存（作用范围小），sessionFactory是二级缓存（作用于服务器缓存）
+   		 	 		     通过工具修改名称，没有事务，无法提交给服务器，
+   		 	 		     解决方式 ： 拷贝一份之前被事务管理的对象，修改拷贝对象的内容。
+   		  )
 	 public static List<Department> getAllDepartments(List<Department> toList){
 	 	List<Depatment> list = new ArrayList<Department>();
 	 	walkDepartmentTreeList(topList,"┣",list);
@@ -21,7 +25,7 @@
 
 	public static void walkDepartmentTreeList(Collection<Department> topList,String prefix,List<Department> list){
 		for(Department top : topList){
-		 //顶点   (使用副本，因为原对象存在副本中)
+		 //顶点   (使用副本，因为原对象存在Session中)
 		 Department copy = new Department();
 		 copy.setId(top.getId());
 		 copy.setName(prefix +  top.getName());
@@ -50,10 +54,9 @@
 		<link type="text/css" rel="stylesheet" href="${pageContext.request.contextPath}/style/blue/pageCommon.css" />
   	1.2在其他页面引用<%@include file="/WEB-INF/jsp/public/commons.jsp" %>	
   	
-  2.Action : 增加BaseAction
-  	 我们所写的Action都继承这个类  : 基本的action都实现ModelDrivern接口，实现getModel方法，可以抽离出，方便以后action
-  	 RoleAction extends BaseAction<Role>
-  	 抽取ModelDriven支持和Service实例声明
+  2.Action : 显示层抽取BaseAction.java
+  	 我们所写的Action都继承这个类 : 基本的action都实现ModelDrivern接口，实现getModel方法，可以抽离出，方便以后action   
+  	 RoleAction extends BaseAction<Role>  抽取ModelDriven支持和Service实例声明
   	   abstract class BaseAction<T> extends ActionSupport implements  ModelDriven<T> 
   	   {  
   			    protected T model = null;
@@ -79,11 +82,13 @@
 				protected DepartmentService departmentService;
 		}  	   
   3.Service : 合并Service与Dao
+     业务层(Service)主要写逻辑代码
      3.1使用两层	(合并Service和Dao)
        将 view   +  Service + Dao 
        改为:view +  Service(原Service + 原Dao)
-       @Deprecated(过时的)
-          将BaseDao改为DaoSupport ，BaseDaoImpl 改为DaoSupportImpl  (并非为dao层，此处为dao支持)
+       @Deprecated(过时的)  在dao层中标注
+       	  (并非为dao层，此处为dao支持:提供对数据访问的支持)
+          将BaseDao改为DaoSupport ，BaseDaoImpl 改为DaoSupportImpl（ 需要添加事务@Transactionnal）  
           RoleService extends DaoSupport<Role>
           RoleServiceImpl extends DaoSupportmpl<Role> implements  RoleService
           	

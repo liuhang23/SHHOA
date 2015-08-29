@@ -1,4 +1,4 @@
-一.SHH整合（12天完成）8月5号 ----8月17号（迷恋+热情）
+1一.SHH整合（12天完成）8月5号 ----8月17号（迷恋+热情）
    1.搭建环境（引入jar包）
    		// 让主窗口的title与当前操作的（右侧的）窗口的title一致
 	    parent.document.title = "OA - " + document.title;
