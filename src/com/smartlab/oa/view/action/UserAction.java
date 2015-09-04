@@ -97,7 +97,7 @@ public class UserAction extends BaseAction<User> {
 
 	// 6.修改
 	public String edit() throws Exception {
-		//1.从数据库去除原对象
+		//1.从数据库取出原对象
 		User user = userService.getById(model.getId());
 		//2.设置要修改的属性
 		user.setLoginName(model.getLoginName());
@@ -118,7 +118,7 @@ public class UserAction extends BaseAction<User> {
 
 	// 7.初始化密码为1234
 	public String initPassword() throws Exception {
-		//1.从数据库中去除原对象
+		//1.从数据库中找到原对象
 		User user = userService.getById(model.getId());
 		//2.设置默认密码为1234（要使用MD5摘要）
 		String md5Digest = DigestUtils.md5Hex("1234");

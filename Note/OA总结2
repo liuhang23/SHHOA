@@ -131,10 +131,13 @@
     			 <s:form action="departmentAction_%{id == null ? 'add' : 'edit'}">
     			 	<s:iterator value="#departmentList"></s:iterator>
     			 	<s:hidden name="id"/>
+    			(岗位可以为多个)  <s:iterator value="roles">  <!--ongl表达式，找到集合，并循环得到名字  -->
+                				${name}&nbsp;
+                	            </s:iterator>
         （单行文本框）<s:textfield>
         （多行文本框）<s:textarea>
     	     （单选）<s:select name=".." list=".." listkey=".." listValue=".." headerKey="" headerValue="===请选择部门===">
-    		 （多选）<s:select multiple="true" size="10" name=".." list="..(#departmentList)" listkey="..(id)" listValue="..(name)" >	    
+    		 （多选）<s:select multiple="true" size="10" name=".." list="..(#roleList)" listkey="..(id)" listValue="..(name)" >	    
     		 
     		 （单选）<s:radio name="" list="%{#{'男':'男' ,'女':'女'}}">
     		 	    <s:radio name="gender" list="#{'男':'男' ,'女':'女'}">
