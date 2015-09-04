@@ -103,7 +103,7 @@ public class RoleAction extends BaseAction<Role> {
 		List<Privilege> privilegeList = privilegeService.getByIds(privilegeIds);
 		role.setPrivileges(new HashSet<Privilege>(privilegeList));
 		// 3.更新到数据库
-		roleService.save(role);
+		roleService.update(role);
 		return "toList";
 	}
 
