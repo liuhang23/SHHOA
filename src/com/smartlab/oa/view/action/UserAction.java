@@ -154,8 +154,6 @@ public class UserAction extends BaseAction<User> {
 	}
 	
 	
-	
-	
 	// -------
 	public Long getDepartmentId() {
 		return departmentId;

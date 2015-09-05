@@ -74,7 +74,6 @@
 						}  
 					}	
 					
-					
 					页面图标解决 ${id}将图片路径改为对应id遍历
 				*2.根据权限显示对应菜单目录
 				    在jsp使用<s:if test = "#session.user.hashPrivilegeByName(name)"></s:if>  判断是否有权限
@@ -107,6 +106,9 @@
 			   二级菜单对应连接 <a target="right" href="${pageContext.request.contextPath()}${url}.action"> ${name}</a>
 			   *1.权限功能树状结构显示
 	           //*解决在 <s:checkboxlist name="privilegeIds" list="#privilegeList" listKey="id" listValue="name"></s:checkboxlist>不能换行显示
+			   //*全选 ：<input type="CHECKBOX" id="cbSelectAll" onClick="$('[name=prvilegesIds]').attr('checked',this.checked)"/>
+			   //		 <label for="cbSelectAll">全选</label> 
+			     
 			     <s:iterator value="privilegeList">
 					<input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"
 					    <s:property value="%{id in privilegeIds ? 'checked': ''}"/>
@@ -140,8 +142,13 @@
 			       //3.使用方式 $("#tree").treeview();
 			       
 			   完整实现 ：   
-			       
+		    3.1 实现登陆注销
+		    	.登陆通过判断账号和密码是否正确，进行跳转
+			    .注销 将user对象从对象栈中移除
+			    .页面整合，显示主页面   
 			4，拦截每一个action请求，验证用户是否有权限访问...
+			
+			
                
            
            

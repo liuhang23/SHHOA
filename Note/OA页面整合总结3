@@ -1,0 +1,47 @@
+一.使用frameset方式进行页面整合
+  1.使用homeAction作为主目录 index
+  	将页面分为(上 中（左 右）下) bottom , left ,right ,top
+  2.编写HomeAction用于页面跳转
+  	@Controller
+	@Scope("prototype")
+    public class HomeAction extends ActionSupport{
+    	// 主页面
+		public String index() throws Exception {
+			return "index";
+		}
+
+		// 下页面
+		public String bottom() throws Exception {
+			return "bottom";
+		}
+	
+		// 上页面
+		public String top() throws Exception {
+			return "top";
+		}
+	
+		// 左页面
+		public String left() throws Exception {
+			return "left";
+		}
+	
+		// 右页面
+		public String right() throws Exception {
+			return "right";
+		}
+    }
+    
+   3.在struts.xml文件中配置homeAction
+   	<!-- 4.首页 -->
+	<action name="home_*" class="homeAction" method="{1}">
+	     <result name="{1}">/WEB-INF/jsp/homeAction/{1}.jsp</result>
+	</action>
+	
+	4.优化默认进入的index页面
+		一个功能多个步骤：  转发   (request.getRequestDispatcher().forward(request,response);)
+		两个不同的功能：   重定向 （response.sendRedirect()）
+	<%@ page language="java" import="java.util.*" pageEncoding="UTF-8"%>
+	<% response.sendRedirect(request.getContextPath()+"/home_index.action"); %>
+	
+   
+   
