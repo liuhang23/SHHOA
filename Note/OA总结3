@@ -8,8 +8,8 @@
             权限就是控制功能的使用（功能对应着URL）。
 			对功能的控制就是对URL的访问控制。
 			在我们的程序中，一个功能对应一个或两个URL：
-			1，例如列表或删除功能，只对应一个URL.
-			2，例如添加或修改功能，对应两个URL：..add, ..addUI
+			1.例如列表或删除功能，只对应一个URL.
+			2.例如添加或修改功能，对应两个URL：..add, ..addUI
 			
 		                  
    4.与权限相关的功能具体有哪些：
@@ -124,7 +124,7 @@
 			     *解决树状结构(1~3) SZTest.jsp
 			       //1.引入js和css jquery.treeview.js,jquery.treeview.css,jquery.js
 			       //2.使用ul展示数据
-			       <ul id="tree">
+			       <ul id="tree()">
 			       		<li>系统管理（1）
 			       			<ul>
 								<li>部门管理（2）</li>
