@@ -12,7 +12,7 @@
       ActionContext.getContext.put("departmentList",departmentList);
       
    2.部门树状结构工具类分析 
-   		 (会出现问题 : 1.显示部门结构会变化（顺序）:  可以在xx.hbm.xml设置排序方式解决
+   		 (会出现问题 : 1. 显示部门结构会变化（顺序）:  可以在xx.hbm.xml设置排序方式解决
    		 	 		  2. session是一级缓存（作用范围小），sessionFactory是二级缓存（作用于服务器缓存）
    		 	 		     通过工具修改名称，没有事务，无法提交给服务器，
    		 	 		     解决方式 ： 拷贝一份之前被事务管理的对象，修改拷贝对象的内容。

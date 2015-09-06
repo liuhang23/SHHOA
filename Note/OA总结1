@@ -308,9 +308,9 @@
       	删除页面也需要添加删除参数  action="department_delete?id=%{id}&parentId=%{parent.id}" 
      
    1.4使用懒加载，并不抛异常（Web程序中懒加载异常说明及解决方案）
-   	  报错 : org.hibernate.LazyInitializationException: could not initialize proxy - no Session
-   	  产生原因：session在事务打开开始，事务提交后关闭，在页面第一次加载了懒加载属性，但事务提交完成，session已经关闭，则产生了懒加载异常。
-      解决方案:Fileter或Interceptor先进后出，在页面请求完成后关闭session,Spring中有openSessionInviewFilter可以解决
+   	  报错 :    org.hibernate.LazyInitializationException: could not initialize proxy - no Session
+   	  产生原因: session在事务打开开始，事务提交后关闭，在页面第一次加载了懒加载属性，但事务提交完成，session已经关闭，则产生了懒加载异常。
+      解决方案: Fileter或Interceptor先进后出，在页面请求完成后关闭session,Spring中有openSessionInviewFilter可以解决
       在web.xml中配置配置openSessionInviewFilter,配置放在struts2配置文件上
       		<!-- 配置Spring的用于解决懒加载问题的过滤器 -->
 			<filter>

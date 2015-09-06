@@ -106,20 +106,21 @@
 			   二级菜单对应连接 <a target="right" href="${pageContext.request.contextPath()}${url}.action"> ${name}</a>
 			   *1.权限功能树状结构显示
 	           //*解决在 <s:checkboxlist name="privilegeIds" list="#privilegeList" listKey="id" listValue="name"></s:checkboxlist>不能换行显示
-			   //*全选 ：<input type="CHECKBOX" id="cbSelectAll" onClick="$('[name=prvilegesIds]').attr('checked',this.checked)"/>
+			   //*全选效果：<input type="CHECKBOX" id="cbSelectAll" onClick="$('[name=prvilegesIds]').attr('checked',this.checked)"/>
 			   //		 <label for="cbSelectAll">全选</label> 
 			     
 			     <s:iterator value="privilegeList">
 					<input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"
-					    <s:property value="%{id in privilegeIds ? 'checked': ''}"/>
-					> 
-					<label for="cb_${id}">${name}</label> <br/>								
+					    <s:property value="%{id in privilegeIds ? 'checked': ''}"/>   // id  in privilegeIds 某个元素在集合中是否存在
+ 					> 
+					<label for="cb_${id}">${name}</label> <br/>	  //解决选中文字也可以选中复选框							
 				</s:iterator>
-			     *解决无法回显
+			   
+			    *解决无法回显
 			        input框中有一个属性 ： checked（选中效果）
 			       <s:property value="%{id in privilegeIds ? 'checked': ''}"/>
 			       struts2中in表示，在privilegeIds中对比id是否存在
-			     *解决选中文字无法选中（通过Id来作唯一标示符） ： <label for="cb_${id}">${name}</label>   
+			     *解决选中文字无法选中（通过Id来作唯一标示符） ： <input id="cb_${id}">   <label for="cb_${id}">${name}</label>   
 			     *解决树状结构(1~3) SZTest.jsp
 			       //1.引入js和css jquery.treeview.js,jquery.treeview.css,jquery.js
 			       //2.使用ul展示数据
@@ -146,7 +147,7 @@
 		    	.登陆通过判断账号和密码是否正确，进行跳转
 			    .注销 将user对象从对象栈中移除
 			    .页面整合，显示主页面   
-			4，拦截每一个action请求，验证用户是否有权限访问...
+			4.拦截每一个action请求，验证用户是否有权限访问...
 			
 			
                
