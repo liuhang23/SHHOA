@@ -3,21 +3,154 @@
            		      children(选择下一级元素)        find(选择所有后代元素) 
                       siblings(选择同级元素（兄弟）)   prev(选择兄弟元素（前一个）)   next(选择弟元素(后一个))
                       toggle()方法进行显示隐藏交互事件，如果显示的就进行隐藏，如果是隐藏的就显示 
-   *2.$(function(){  
-          //文档加载完执行
-          //指定事件处理函数
+     
+   *2. 修改页面最后样式
+ <span class="folder"> ${name} </span>   //显示文件夹图标
+   	    <ul id="tree">
+		   <s:iterator value="#application.topPrivilegeList">
+			<li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"  <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+			  <label for="cb_${id}"><span class="folder">${name}</span></label>
+			 <ul>
+				<s:iterator value="children">
+				<li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}" <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+				<label for="cb_${id}"><span class="folder">${name}</span></label>	
+			 <ul>
+				 <s:iterator value="children">
+				 <li><input type="checkbox" name="privilegeIds" value="${id}" id="cb_${id}"  <s:property value="%{id in privilegeIds ? 'checked': ''}"/>>
+					 <label for="cb_${id}"><span class="folder">${name}</span></label></li>
+				</s:iterator>
+			</ul>										
+		  </li>											 
+        </s:iterator>											
+       </ul>
+     </li>									
+  </s:iterator>
+</ul>
+                      
+                      
+   *3.实现权限依赖关系
+     //文档加载完执行
+   	 $(function(){  
+         //文档加载完成之后执行，指定时间处理函数
           $("[name = privilegeIds]").click(function(){
-                 //当选中或取消一个权限时,也同时选中或取消所有下级权限
+          	//alert(this.checked);
+                //当选中或取消一个权限时,也同时选中或取消所有下级权限
           		$(this).siblings("ul").find("input").attr("checked",this.checked);
-          		//当选中一个权限时，也要选中所有的直接上级权限
-          		if(this.checked == true){
+          		//当选中一个权限时，同时选中所有的直接上级权限
+          		if(this.checked == true){  //下级取消，上级是不需要跟着一起取消
           			$(this).parents("li").children("input").attr("checked",this.checked);
           		}
           });
+          
+          //实现树状结构
+          $("#tree").treeview();
       });       
       
-二. 自定义标签（解决不同权限用户登录后，显示不同有权限的链接）  
-    修改源码 ： 
-     doStartTag()
-	 doEndTag()
+二. 自定义标签（解决不同权限用户登录后，显示不同有权限的链接）    
+    修改前方案 ： 在departmentAction(list.jsp)页面中，每一个页面显示前进行判断
+    	     <s:if test="#session.user.hashPrivilegeByName('部门删除')">
+    	     	  <s:a action="department_delete?id=%{id}&parentId=%{parent.id}"  onclick="return window.confirm('这将删除所有下级部门')">删除</s:a>
+    	     </s:if> 
+    修改方案： （修改struts2源码,设置自定义功能标签） 
+      1.  在User.java类中
+                // 判断本用户是否有指定名称的权限
+				public boolean hasPrivilegeByName(String name) {
+					// 超级管理员有所有的权限
+					if (isAdmin()) {
+						return true;
+					}
+					// 普通用户需要判断是否含有这个权限
+					for (Role role : roles) { // 遍历用户对象
+						for (Privilege privilege : role.getPrivileges()) {
+							if (privilege.getName().equals(name)) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			
+				// 判断本用户是否有指定URL的权限
+				public boolean hasPrivilegeByUrl(String privUrl) {
+					// 超级管理员有所有的权限
+					if (isAdmin()) {
+						return true;
+					}
+					// 普通用户要判断是否含有这个权限
+					for (Role role : roles) { // 遍历用户对象
+						for (Privilege privilege : role.getPrivileges()) {
+							if (privUrl.equals(privilege.getUrl())) {
+								return true;
+							}
+						}
+					}
+					return false;
+				}
+			
+				// 判断本用户是否是超级管理员
+				public boolean isAdmin() {
+					return "admin".equals(loginName);
+				}
+   注意点 : 使用equals时，将一定不为空的放在前面，将可能为空的放在里面(避免空指针异常，顶级列表为空)  privUrl.equals(privilege.getUrl()
+    	  
+	 	     
+	 2.实现方案步骤 : 有该功能权限的链接显示，没有则不显示 
+	 	2.1找出源代码（.tld 自定标签类与自定标签的对应关系---->Web App libraries--->struts2-core-2.1.8--->META-INF----->struts-tags.tld） 
+	 		<name>a</name>
+    		<tag-class>org.apache.struts2.views.jsp.ui.AnchorTag</tag-class>
+        2.2将需要修改的包，在目录中创建相同的名字包（org.apache.struts2.views.jsp.ui）
+            2.2.1创建相同的类（AnchorTag）	 ，增加struts2中a标签的功能
+            2.2.2容器会先在class目录下找类，未找到则会在jar包中找类	
+            2.2.3添加内容（显示之前作判断，是否需要添加此功能）
+        2.3自定义标签
+            doStartTag()  : 开始标签 (记录标签内容)
+	 	    doEndTag()    : 结束标签 (可以得到标签，和内容)
+	 	    
+		 	 public int doEndTag() throws JspException {
+		 	    //获取登陆的用户
+		 	    User user = (User)pageContext.getSession().getAttribute("user");
+				//当前准备显示的链接对应的权限url
+				//>>在开头加上'/'
+				String privUrl = "/" + action;
+				
+				//路径判断，检测权限
+				if(user.hasPrivilegeByUrl(privUrl)){
+					return super.doEndTag();  //正常的生成并显示超链接标签，并继续执行页面的后面的代码
+				}else {
+					return EVAL_PAGE;  //不生成与显示超链接标签，只是继续执行页面后面的代码！
+				}
+		 	}
+	 		
+	 		
+			 	User类中的hasPrivilegeByUrl(){	
+				 		  //>>去掉后面的参数
+						int pos = privUrl.indexOf("?");
+						if(pos > -1){
+							privUrl = privUrl.subString(0,pos);	
+						}
+						//>>去掉UI后缀
+						if(privUrl.endWith("UI")){
+						   priUrl = priUrl.subString(0,priUrl.length() -2 );
+						}
+			 	}
+			 	
+      3.实现功能后，出现的问题
+         3.1 样式问题:可以在页面后面添加&nbsp;
+         3.2 普通用户即使拥有设置权限功能也无法显示,产生原因,初始化安装程序时没有设置权限的这项功能链接，则无法显示。	 	
+			  拦截每一个action请求，验证用户是否有权限访问
+		   import com.opensymphony.xwork2.ActionInvocation
+		   CheckPrivilegeInterceptor implements Intercepto{
+		   
+		   } 	
+			 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		
+	 		   
      
