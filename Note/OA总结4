@@ -121,7 +121,6 @@
 				}
 		 	}
 	 		
-	 		
 			 	User类中的hasPrivilegeByUrl(){	
 				 		  //>>去掉后面的参数
 						int pos = privUrl.indexOf("?");
@@ -137,16 +136,65 @@
       3.实现功能后，出现的问题
          3.1 样式问题:可以在页面后面添加&nbsp;
          3.2 普通用户即使拥有设置权限功能也无法显示,产生原因,初始化安装程序时没有设置权限的这项功能链接，则无法显示。	 	
-			  拦截每一个action请求，验证用户是否有权限访问
-		   import com.opensymphony.xwork2.ActionInvocation
-		   CheckPrivilegeInterceptor implements Intercepto{
-		   
+			  拦截每一个action请求，验证用户是否有权限访问.
+过滤器要实现Interceptor接口，或是继承AbstractInterceptor类。
+
+检查权限的过滤器中的逻辑为：
+	// 1，如果未登录
+	// >> 如果不是正在使用登录功能，就转到登录页面
+	// >> 如果正在使用登录功能，就放行
+	// 2，如果已登录
+	// >> 如果有权限，就放行
+	// >> 如果没有权限，就转到“没有权限的错误提示页面”
+			  
+		   import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
+		   CheckPrivilegeInterceptor implements AbstractInterceptor{
+		   			//父类的抽象方法，子类必须要实现
+		   			@Override
+					public String intercept(ActionInvocation invocation) throws Exception {
+						System.out.println("------->之前");
+						String result = invocation.invoke();//放行 
+						System.out.println("------->之后");
+						return result;
+					}
 		   } 	
-			 		
+	 	
+	 	//自定义拦截器的配置	 struts2.xml
+	 	<interceptors> 
+    		<!--声明拦截器  -->
+    		<interceptor name="checkPrivilege" class="com.smartlab.oa.util.CheckPrivilegeInterceptor"></interceptor>
+    		
+    		<!--重写定义默认的定义拦截器栈 -->
+    		<interceptor-stack name="defaultStack">
+    			<interceptor-ref name="checkPrivilege"></interceptor-ref><!--将自定义的拦截器添加到拦截器栈中  -->
+    			<interceptor-ref name="defaultStack"></interceptor-ref>
+    		</interceptor-stack>
+    		
+    	</interceptors>
+    	
+    	//定义全局的结果集  拦截器拦截时，如果用户没有登陆，则需要调整到登陆页面，用户输入错误账号和密码也需要跳转到登陆页面。
+	 	<global-results>
+	 		<result name="loginUI">/WEB-INF/jsp/userAction/loginUI.jsp</result>	
+	 	</global-results>	
 	 		
 	 		
-	 		
-	 		
+	 	4.权限分类说明 ： 
+	 	   系统中所有的action ---> 登陆功能（未登陆时的可以使用）
+	 	  	要控制的功能 ，需要登陆用户，并且有相应的权限才可以使用
+	 	  	--> 例如：删除用户，添加用户，管理文章等
+	 	  	
+	 	 1.使用权限
+		    (1).拦截验证每个请求的权限
+		    (2).完善权限分类
+
+		2.小问题
+			 (1) 重启Tomcat后还是登陆状态 》让容器中存在序列化对象 
+					 解决方法 ：实现序列化 user implement java.io.Serializable
+			 (2) 解决登陆页面嵌套的问题	
+			     	 // 在被嵌套时就刷新上级窗口  loginUI.js
+					if(window.parent != window){
+						window.parent.location.reload(true);
+					} 	
 	 		
 	 		
 	 		
